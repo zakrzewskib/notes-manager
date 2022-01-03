@@ -109,8 +109,10 @@ def encrypt(id):
 		note = Note.query.filter_by(id=id).first()
 		if form.validate_on_submit():
 			note.isEncrypted = 1
-			note.password = form.password.data
-			note.content = encryptMessage(note.content, note.password)
+
+			note.content = encryptMessage(note.content, form.password.data)
+			note.password = generate_password_hash(form.password.data, method='sha256')
+
 			db.session.commit()
 			return redirect(url_for('index'))
 		return render_template('encrypt.html', form=form, note=note)
@@ -122,12 +124,12 @@ def decrypt(id):
 	note = Note.query.filter_by(id=id).first()
 
 	if form.validate_on_submit():
-		if (note.password == form.password.data):
-			note.isEncrypted = 0
-			note.content = decryptMessage(note.content, note.password)
-			note.password = ''
-			db.session.commit()
-			return redirect(url_for('index'))
+			if check_password_hash(note.password, form.password.data):
+				note.isEncrypted = 0
+				note.content = decryptMessage(note.content, form.password.data)
+				note.password = ''
+				db.session.commit()
+				return redirect(url_for('index'))
 
 	return render_template('decrypt.html', form=form, note=note)
 

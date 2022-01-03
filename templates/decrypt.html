@@ -15,7 +15,7 @@ Login
       <form class="form" method="POST" action="/decrypt/{{note.id}}">
         {{ form.hidden_tag() }}
         {{ wtf.form_field(form.password) }}
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Encrypt</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Decrypt</button>
       </form>
     </div>
 {% endblock %}
