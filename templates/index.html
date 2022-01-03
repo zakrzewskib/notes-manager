@@ -14,8 +14,22 @@ Notes manager
     <header class="header">
         <h1>Notes manager</h1>
     </header>
-    <section>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur sed quisquam sit, veniam quia maiores eaque exercitationem unde consequuntur consequatur molestias vel ab labore ad aperiam quibusdam velit. Quis, odit! Lorem ipsum dolor sit amet
-        consectetur adipisicing elit. Sed impedit numquam enim quibusdam iste reprehenderit est natus itaque dolorem eum ab perspiciatis, modi illo fugiat laboriosam, soluta et mollitia reiciendis.
-    </section>
+    <table>
+      <tr>
+        <th>Id</th>
+        <th>Content</th>
+        <th>Actions</th>
+      </tr>
+  
+      {% for note in notes %}
+      <tr>
+        <td>{{note.id}}</td>
+        <td>{{note.content}}</td>
+        <td>
+          <a href="#">Change type</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
 </div>
 {% endblock %}

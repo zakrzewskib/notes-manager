@@ -17,3 +17,24 @@ body {
 .header {
     text-align: center;
 }
+
+table,
+td,
+th {
+    border: 1px solid #aaa;
+    padding: 1.2rem;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    height: 30px;
+}
+
+td {
+    text-align: center;
+    padding: 5px;
+}
