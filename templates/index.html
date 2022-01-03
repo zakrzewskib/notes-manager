@@ -22,6 +22,7 @@ Notes manager
       <tr>
         <th>Id</th>
         <th>Content</th>
+        <th>Encrypted</th>
         <th>Actions</th>
       </tr>
   
@@ -29,8 +30,15 @@ Notes manager
       <tr>
         <td>{{note.id}}</td>
         <td>{{note.content}}</td>
+        <td>  {% if password|length < 1 %}
+          Not encrypted
+          {% else %}
+          encrypted
+          {% endif %}
+        </td>
         <td>
-          <a href="#">Change type</a>
+          <a href="#">Share</a>
+          <a href="#">Encrypt</a>
         </td>
       </tr>
       {% endfor %}
