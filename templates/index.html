@@ -1,45 +1,33 @@
-{% extends "bootstrap/base.html" %}
-
-{% block title %}
-Notes manager
-{% endblock %}
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}">
-{% endblock %}
-
-{% block content %}
+{% extends "bootstrap/base.html" %} {% block title %} Notes manager {% endblock %} {% block styles %} {{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}"> {% endblock %} {% block content %}
 <div class="app">
     <header class="header">
         <h1>Notes manager</h1>
         <div class="welcome-and-logout">
-          <span>Welcome, {{ name }}!</span> <a href="{{ url_for('logout') }}">Log Out</a>
+            <span>Welcome, {{ name }}!</span> <a href="{{ url_for('logout') }}">Log Out</a>
         </div>
-        
+
     </header>
     <table>
-      <tr>
-        <th>Id</th>
-        <th>Content</th>
-        <th>Actions</th>
-      </tr>
-  
-      {% for note in notes %}
-      <tr>
-        <td>{{note.id}}</td>
-        <td>  {% if note.isEncrypted == 0 %}
-          {{note.content}}
-          {% else %}
-          <a href="/decrypt/{{note.id}}">Decrypt</a>
-          {% endif %}
-        </td>
-        <td>
-          <a href="#">Share</a>
-          <a href="/encrypt/{{note.id}}">Encrypt</a>
-        </td>
-      </tr>
-      {% endfor %}
+        <tr>
+            <th>Id</th>
+            <th>Content</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for note in notes %}
+        <tr>
+            <td>{{note.id}}</td>
+            <td>
+                {{note.content}} {% if note.isEncrypted == 1 %}
+                <a href="/decrypt/{{note.id}}">Decrypt</a> {% endif %}
+            </td>
+            <td>
+                <a href="#">Share</a>
+                <a href="/encrypt/{{note.id}}">Encrypt</a>
+            </td>
+        </tr>
+        {% endfor %}
     </table>
 </div>
 {% endblock %}

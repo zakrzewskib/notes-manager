@@ -108,7 +108,7 @@ def encrypt(id):
 		form = EncryptForm()
 		note = Note.query.filter_by(id=id).first()
 		if form.validate_on_submit():
-			# note.isEncrypted = 1
+			note.isEncrypted = 1
 			note.password = form.password.data
 			note.content = encryptMessage(note.content, note.password)
 			db.session.commit()
@@ -123,9 +123,9 @@ def decrypt(id):
 
 	if form.validate_on_submit():
 		if (note.password == form.password.data):
-			note.password = ''
-			# note.isEncrypted = 0
+			note.isEncrypted = 0
 			note.content = decryptMessage(note.content, note.password)
+			note.password = ''
 			db.session.commit()
 			return redirect(url_for('index'))
 
