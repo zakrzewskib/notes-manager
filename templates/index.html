@@ -28,8 +28,8 @@ Notes manager
       {% for note in notes %}
       <tr>
         <td>{{note.id}}</td>
-        <td>  {% if note.password|length < 1 %}
-          {{note.conent}}
+        <td>  {% if note.isEncrypted == 0 %}
+          {{note.content}}
           {% else %}
           <a href="/decrypt/{{note.id}}">Decrypt</a>
           {% endif %}
