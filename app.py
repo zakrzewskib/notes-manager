@@ -31,6 +31,12 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15), unique=True)
@@ -56,7 +62,7 @@ class LoginForm(FlaskForm):
 @login_required
 def index():
     notes = Note.query.filter(Note.id == current_user.id)
-    return render_template('index.html', notes=notes)
+    return render_template('index.html', notes=notes, name=current_user.username)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

@@ -13,6 +13,10 @@ Notes manager
 <div class="app">
     <header class="header">
         <h1>Notes manager</h1>
+        <div class="welcome-and-logout">
+          <span>Welcome, {{ name }}!</span> <a href="{{ url_for('logout') }}">Log Out</a>
+        </div>
+        
     </header>
     <table>
       <tr>

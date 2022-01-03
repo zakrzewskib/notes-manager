@@ -38,3 +38,7 @@ td {
     text-align: center;
     padding: 5px;
 }
+
+.welcome-and-logout {
+    font-size: 1.8rem;
+}
