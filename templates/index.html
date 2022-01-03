@@ -22,23 +22,21 @@ Notes manager
       <tr>
         <th>Id</th>
         <th>Content</th>
-        <th>Encrypted</th>
         <th>Actions</th>
       </tr>
   
       {% for note in notes %}
       <tr>
         <td>{{note.id}}</td>
-        <td>{{note.content}}</td>
-        <td>  {% if password|length < 1 %}
-          Not encrypted
+        <td>  {% if note.password|length < 1 %}
+          {{note.conent}}
           {% else %}
-          encrypted
+          <a href="/decrypt/{{note.id}}">Decrypt</a>
           {% endif %}
         </td>
         <td>
           <a href="#">Share</a>
-          <a href="#">Encrypt</a>
+          <a href="/encrypt/{{note.id}}">Encrypt</a>
         </td>
       </tr>
       {% endfor %}

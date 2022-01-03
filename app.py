@@ -59,6 +59,9 @@ class LoginForm(FlaskForm):
   username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
   password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
+class EncryptForm(FlaskForm):
+  password = PasswordField('password')
+
 @app.route('/')
 @login_required
 def index():
@@ -92,6 +95,17 @@ def login():
         # return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
 
     return render_template('login.html', form=form)
+
+@app.route('/encrypt/<id>', methods=['GET', 'POST'])
+def encrypt(id):
+    form = EncryptForm()
+    note = Note.query.filter_by(id=id).first()
+    if form.validate_on_submit():
+      note.password = form.password.data
+      db.session.commit()
+      return redirect(url_for('index'))
+    return render_template('encrypt.html', form=form, note=note)
+
 
 if __name__ == "__main__":
   app.run(debug=True)

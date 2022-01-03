@@ -1,0 +1,21 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='sign-form.css')}}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+      <form class="form" method="POST" action="/encrypt/{{note.id}}">
+        {{ form.hidden_tag() }}
+        {{ wtf.form_field(form.password) }}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Encrypt</button>
+      </form>
+    </div>
+{% endblock %}
