@@ -1,6 +1,15 @@
-{% extends 'base.html' %} {% block head %}
-<title>Notes manager</title>
-{% endblock%} {% block body %}
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Notes manager
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}">
+{% endblock %}
+
+{% block content %}
 <div class="app">
     <header class="header">
         <h1>Notes manager</h1>
