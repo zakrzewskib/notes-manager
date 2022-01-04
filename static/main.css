@@ -42,3 +42,17 @@ td {
 .welcome-and-logout {
     font-size: 1.8rem;
 }
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.topnav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    padding: 2.4rem;
+    font-size: 1.6rem;
+}
