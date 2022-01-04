@@ -1,21 +1,12 @@
 from flask import Flask, render_template, redirect, url_for
 
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
-from wtforms.validators import InputRequired, Email, Length
-
 from flask_bootstrap import Bootstrap
-
 from flask_sqlalchemy import SQLAlchemy
-
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-
 from werkzeug.security import generate_password_hash, check_password_hash
 
-import os
-
-def generateSecretKey():
-	return os.urandom(32)
+from utilities.forms import RegisterForm, LoginForm, EncryptForm
+from utilities.keys import generateSecretKey
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -24,18 +15,6 @@ app.config['SECRET_KEY'] = generateSecretKey()
 db = SQLAlchemy(app)
 
 Bootstrap(app)
-
-class RegisterForm(FlaskForm):
-		email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
-		username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-		password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
-
-class LoginForm(FlaskForm):
-	username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
-
-class EncryptForm(FlaskForm):
-	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
 login_manager = LoginManager()
 login_manager.init_app(app)
