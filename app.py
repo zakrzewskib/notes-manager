@@ -4,7 +4,7 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
-from utilities.forms import RegisterForm, LoginForm, EncryptForm
+from utilities.forms import RegisterForm, LoginForm, EncryptForm, NoteForm
 from utilities.keys import generateSecretKey
 from utilities.hashing import checkIfHashedPasswordIsCorrect, hashPassword
 
@@ -120,6 +120,19 @@ def decrypt(id):
 				return '<h1>Invalid password</h1>'
 
 		return render_template('decrypt.html', form=form, note=note)
+
+@app.route('/create', methods=['GET', 'POST'])
+@login_required
+def create():
+		form = NoteForm()
+
+		if form.validate_on_submit():
+				note = Note(content=form.content.data, user_id=current_user, isEncrypted=False)
+				db.session.add(note)
+				db.session.commit()
+				return redirect(url_for('index'))
+
+		return render_template('create.html', form=form)
 
 if __name__ == "__main__":
 		app.run(debug=True)

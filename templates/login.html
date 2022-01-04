@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{{url_for('.static', filename='sign-form.css')}}"> {% endblock %} {% block content %}
 <div class="container">
     <form class="form" method="POST" action="/login">
-        <h2 class="form-heading">Please sign in</h2>
+        <h2 class="form-heading">Sign in</h2>
         {{ form.hidden_tag() }} {{ wtf.form_field(form.username) }} {{ wtf.form_field(form.password) }}
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         <a role="button" class="btn btn-lg btn-secondary btn-block" href="{{ url_for('signup') }}">Sign up</a>

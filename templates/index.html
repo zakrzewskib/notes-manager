@@ -14,8 +14,10 @@
         <div class="welcome-and-logout">
             <span>Welcome, {{ name }}!</span> <a href="{{ url_for('logout') }}">Log Out</a>
         </div>
-
     </header>
+
+    <a href="{{ url_for('create') }}">CreateNote</a>
+
     <table>
         <tr>
             <th>Id</th>

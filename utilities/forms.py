@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
+from wtforms.widgets import TextArea
 from wtforms.validators import InputRequired, Email, Length
 
 class RegisterForm(FlaskForm):
@@ -13,3 +14,6 @@ class LoginForm(FlaskForm):
 
 class EncryptForm(FlaskForm):
 	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+
+class NoteForm(FlaskForm):
+	content = StringField("content", validators=[InputRequired()], widget=TextArea())
