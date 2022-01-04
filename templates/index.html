@@ -42,8 +42,25 @@
             <td>
                 {% if note.isEncrypted == 1 %}
                 <a href="/decrypt/{{note.id}}">Decrypt</a> {% else %}
-                <a href="#">Share</a>
+                <a href="/makePublic/{{note.id}}">makePublic</a>
                 <a href="/encrypt/{{note.id}}">Encrypt</a> {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Public notes:</h2>
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Content</th>
+        </tr>
+
+        {% for note in publicNotes %}
+        <tr>
+            <td>{{note.id}}</td>
+            <td>
+                {{note.content}}
             </td>
         </tr>
         {% endfor %}

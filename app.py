@@ -34,6 +34,7 @@ class Note(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	password = db.Column(db.String())
 	isEncrypted = db.Column(db.Boolean())
+	isPublic = db.Column(db.Boolean())
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -49,7 +50,8 @@ def logout():
 @login_required
 def index():
 		notes = current_user.notes
-		return render_template('index.html', notes=notes, name=current_user.username)
+		publicNotes = Note.query.filter_by(isPublic=True) # and user_id!=current_user.get_id()
+		return render_template('index.html', notes=notes, name=current_user.username, publicNotes=publicNotes)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -94,6 +96,8 @@ def encrypt(id):
 		 		return '<h1>This note does not belong to you!</h1>'
 		if note.isEncrypted == 1:
 			return '<h1>This note is already encrypted </h1>'
+		if note.isPublic == 1:
+			return '<h1>This note is public, You cannot encrypt it </h1>'
 
 		form = EncryptForm()
 
@@ -140,6 +144,20 @@ def create():
 				return redirect(url_for('index'))
 
 		return render_template('create.html', form=form)
+
+@app.route('/makePublic/<id>', methods=['GET'])
+@login_required
+def makePublic(id):
+		note = current_user.notes.filter_by(id=id).first()
+		if note == None:
+		 		return '<h1>This note does not belong to you!</h1>'
+		if note.isEncrypted == 1:
+			return '<h1>This note is encrypted, You cannot share it </h1>'
+
+		note.isPublic = True
+		db.session.commit()
+
+		return redirect(url_for('index'))
 
 if __name__ == "__main__":
 		app.run(debug=True)
