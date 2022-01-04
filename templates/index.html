@@ -22,9 +22,10 @@
                 {{note.content}}
             </td>
             <td>
+                {% if note.isEncrypted == 1 %}
+                <a href="/decrypt/{{note.id}}">Decrypt</a> {% else %}
                 <a href="#">Share</a>
-                <a href="/encrypt/{{note.id}}">Encrypt</a> {% if note.isEncrypted == 1 %}
-                <a href="/decrypt/{{note.id}}">Decrypt</a> {% endif %}
+                <a href="/encrypt/{{note.id}}">Encrypt</a> {% endif %}
             </td>
         </tr>
         {% endfor %}

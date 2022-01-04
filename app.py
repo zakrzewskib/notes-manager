@@ -47,7 +47,7 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-		notes = Note.query.filter(Note.user_id == current_user.id)
+		notes = current_user.notes
 		return render_template('index.html', notes=notes, name=current_user.username)
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -83,23 +83,32 @@ from utilities.encryption import encryptMessage, decryptMessage
 @app.route('/encrypt/<id>', methods=['GET', 'POST'])
 @login_required
 def encrypt(id):
+		note = current_user.notes.filter_by(id=id).first()
+		if note == None:
+		 		return '<h1>This note does not belong to you!</h1>'
+		if note.isEncrypted == 1:
+			return '<h1>This note is already encrypted </h1>'
+
 		form = EncryptForm()
-		note = Note.query.filter_by(id=id).first()
+
 		if form.validate_on_submit():
 			note.isEncrypted = 1
-
 			note.content = encryptMessage(note.content, form.password.data)
 			note.password = hashPassword(form.password.data)
-
 			db.session.commit()
 			return redirect(url_for('index'))
+
 		return render_template('encrypt.html', form=form, note=note)
 
 @app.route('/decrypt/<id>', methods=['GET', 'POST'])
 @login_required
 def decrypt(id):
 		form = EncryptForm()
-		note = Note.query.filter_by(id=id).first()
+		note = current_user.notes.filter_by(id=id).first()
+		if note == None:
+		 		return '<h1>This note does not belong to you!</h1>'
+		if note.isEncrypted == 0:
+			return '<h1>This note is not encrypted!</h1>'
 
 		if form.validate_on_submit():
 				if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
