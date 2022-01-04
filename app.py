@@ -25,19 +25,21 @@ db = SQLAlchemy(app)
 
 Bootstrap(app)
 
+class RegisterForm(FlaskForm):
+		email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
+		username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
+		password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+
+class LoginForm(FlaskForm):
+	username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
+	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+
+class EncryptForm(FlaskForm):
+	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
-@login_manager.user_loader
-def load_user(user_id):
-		return User.query.get(int(user_id))
-
-@app.route('/logout')
-@login_required
-def logout():
-		logout_user()
-		return redirect(url_for('index'))
 
 class User(UserMixin, db.Model):
 		id = db.Column(db.Integer, primary_key=True)
@@ -53,17 +55,15 @@ class Note(db.Model):
 	password = db.Column(db.String())
 	isEncrypted = db.Column(db.Boolean())
 
-class RegisterForm(FlaskForm):
-		email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
-		username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-		password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+@login_manager.user_loader
+def load_user(user_id):
+		return User.query.get(int(user_id))
 
-class LoginForm(FlaskForm):
-	username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
-
-class EncryptForm(FlaskForm):
-	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+@app.route('/logout')
+@login_required
+def logout():
+		logout_user()
+		return redirect(url_for('index'))
 
 @app.route('/')
 @login_required
