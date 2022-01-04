@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, SelectMultipleField
 from wtforms.widgets import TextArea
 from wtforms.validators import InputRequired, Email, Length
 
@@ -17,3 +17,6 @@ class EncryptForm(FlaskForm):
 
 class NoteForm(FlaskForm):
 	content = StringField("content", validators=[InputRequired()], widget=TextArea())
+
+class ShareForm(FlaskForm):
+	username = StringField("username", validators=[InputRequired()])

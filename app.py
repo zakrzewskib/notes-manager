@@ -4,7 +4,7 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
-from utilities.forms import RegisterForm, LoginForm, EncryptForm, NoteForm
+from utilities.forms import RegisterForm, LoginForm, EncryptForm, NoteForm, ShareForm
 from utilities.keys import generateSecretKey
 from utilities.hashing import checkIfHashedPasswordIsCorrect, hashPassword
 from utilities.entropy import calculateEntropy, printHowStrongIsYourPassword
@@ -35,6 +35,7 @@ class Note(db.Model):
 	password = db.Column(db.String())
 	isEncrypted = db.Column(db.Boolean())
 	isPublic = db.Column(db.Boolean())
+	sharedToUser = db.Column(db.String())
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -51,7 +52,8 @@ def logout():
 def index():
 		notes = current_user.notes
 		publicNotes = Note.query.filter_by(isPublic=True) # and user_id!=current_user.get_id()
-		return render_template('index.html', notes=notes, name=current_user.username, publicNotes=publicNotes)
+		sharedNotes = Note.query.filter_by(sharedToUser=current_user.username)
+		return render_template('index.html', notes=notes, name=current_user.username, publicNotes=publicNotes, sharedNotes=sharedNotes)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -158,6 +160,27 @@ def makePublic(id):
 		db.session.commit()
 
 		return redirect(url_for('index'))
+
+@app.route('/share/<id>', methods=['GET', 'POST'])
+@login_required
+def share(id):
+		note = current_user.notes.filter_by(id=id).first()
+		if note == None:
+		 		return '<h1>This note does not belong to you!</h1>'
+		if note.isEncrypted == 1:
+			return '<h1>This note is encrypted, You cannot share it </h1>'
+
+		form = ShareForm()
+		if form.validate_on_submit():
+			user = User.query.filter_by(username=form.username.data).first()
+			if user != None:
+				note.sharedToUser = form.username.data
+				db.session.commit()
+				return redirect(url_for('index'))
+			return '<h1>User with that name does not exist!</h1>'
+					
+
+		return render_template('share.html', form=form, note=note)
 
 if __name__ == "__main__":
 		app.run(debug=True)
