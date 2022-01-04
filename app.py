@@ -3,10 +3,10 @@ from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
 
 from utilities.forms import RegisterForm, LoginForm, EncryptForm
 from utilities.keys import generateSecretKey
+from utilities.hashing import checkIfHashedPasswordIsCorrect, hashPassword
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -55,7 +55,7 @@ def signup():
 		form = RegisterForm()
 
 		if form.validate_on_submit():
-				hashed_password = generate_password_hash(form.password.data, method='sha256')
+				hashed_password = hashPassword(form.password.data)
 				new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
 				db.session.add(new_user)
 				db.session.commit()
@@ -70,7 +70,7 @@ def login():
 		if form.validate_on_submit():
 				user = User.query.filter_by(username=form.username.data).first()
 				if user:
-						if check_password_hash(user.password, form.password.data):
+						if checkIfHashedPasswordIsCorrect(user.password, form.password.data):
 								login_user(user)
 								return redirect(url_for('index'))
 
@@ -90,7 +90,7 @@ def encrypt(id):
 			note.isEncrypted = 1
 
 			note.content = encryptMessage(note.content, form.password.data)
-			note.password = generate_password_hash(form.password.data, method='sha256')
+			note.password = hashPassword(form.password.data)
 
 			db.session.commit()
 			return redirect(url_for('index'))
@@ -103,7 +103,7 @@ def decrypt(id):
 	note = Note.query.filter_by(id=id).first()
 
 	if form.validate_on_submit():
-			if check_password_hash(note.password, form.password.data):
+			if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
 				note.isEncrypted = 0
 				note.content = decryptMessage(note.content, form.password.data)
 				note.password = ''
