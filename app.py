@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, session
 
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -44,6 +44,7 @@ def load_user(user_id):
 @app.route('/logout')
 @login_required
 def logout():
+		session['attempt'] = 0
 		logout_user()
 		return redirect(url_for('index'))
 
@@ -73,18 +74,25 @@ def signup():
 
 		return render_template('signup.html', form=form)
 
+import time
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 		form = LoginForm()
+		if not 'attempt' in session:
+			session['attempt'] = 0
+		
+		if session['attempt'] >= 3:
+			return '<h1>Too many login attempts!</h1>'
 
 		if form.validate_on_submit():
+				session['attempt'] = session['attempt'] + 1
+				# time.sleep(3)
 				user = User.query.filter_by(username=form.username.data).first()
 				if user:
 						if checkIfHashedPasswordIsCorrect(user.password, form.password.data):
 								login_user(user, remember=True)
 								return redirect(url_for('index'))
-
-				return '<h1>Invalid username or password</h1>'
+				flash(f"Login attempts: {session['attempt']}")
 
 		return render_template('login.html', form=form)
 
