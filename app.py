@@ -71,11 +71,10 @@ def login():
 				user = User.query.filter_by(username=form.username.data).first()
 				if user:
 						if checkIfHashedPasswordIsCorrect(user.password, form.password.data):
-								login_user(user)
+								login_user(user, remember=True)
 								return redirect(url_for('index'))
 
 				return '<h1>Invalid username or password</h1>'
-				# return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
 
 		return render_template('login.html', form=form)
 
@@ -99,18 +98,19 @@ def encrypt(id):
 @app.route('/decrypt/<id>', methods=['GET', 'POST'])
 @login_required
 def decrypt(id):
-	form = EncryptForm()
-	note = Note.query.filter_by(id=id).first()
+		form = EncryptForm()
+		note = Note.query.filter_by(id=id).first()
 
-	if form.validate_on_submit():
-			if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
-				note.isEncrypted = 0
-				note.content = decryptMessage(note.content, form.password.data)
-				note.password = ''
-				db.session.commit()
-				return redirect(url_for('index'))
+		if form.validate_on_submit():
+				if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
+					note.isEncrypted = 0
+					note.content = decryptMessage(note.content, form.password.data)
+					note.password = ''
+					db.session.commit()
+					return redirect(url_for('index'))
+				return '<h1>Invalid password</h1>'
 
-	return render_template('decrypt.html', form=form, note=note)
+		return render_template('decrypt.html', form=form, note=note)
 
 if __name__ == "__main__":
-	app.run(debug=True)
+		app.run(debug=True)
