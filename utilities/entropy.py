@@ -3,10 +3,8 @@ from math import log2
 
 def countascii(s):
   count = numpy.zeros(256)
-
   for c in s:
       count[ord(c)]+= 1
-  
   return count
 
 
@@ -22,11 +20,6 @@ def calculateEntropy(password):
           H += -p[i]*log2(p[i])
   return H
 
-# print(calculateEntropy("password"))
-# print(calculateEntropy("horserandomwordagain"))
-# print(calculateEntropy("DrSK_B2/yw%P$KaU"))
-# print(calculateEntropy("XN_>qYwTnp9=WB+7"))
-
 def printHowStrongIsYourPassword(entropy):
   s = "Your password entropy= " + str(entropy) + " (max = 8), (min = 0)"
   if entropy <= 1:
@@ -38,3 +31,11 @@ def printHowStrongIsYourPassword(entropy):
   else:
     s += ". This password is very strong!"
   return s
+
+# print(calculateEntropy("password")) # 2.75
+# print(calculateEntropy("Tr0ub4dor&3")) # 3.28
+# print(calculateEntropy("correcthorsebatterystaple")) # 3.37
+
+# # Secure Password Generator - https://passwordsgenerator.net/:
+# print(calculateEntropy("DrSK_B2/yw%P$KaU")) # 3.88
+# print(calculateEntropy("XN_>qYwTnp9=WB+7")) # 4.0
