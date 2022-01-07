@@ -2,7 +2,26 @@ from flask import Flask, render_template, redirect, url_for, flash, session
 
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+# https://flask-login.readthedocs.io/en/latest/#login-using-authorization-header
+# Flask-Login provides user session management for Flask. 
+# 
+# It handles the common tasks of logging in, logging out, and remembering your users’ sessions over extended periods of time.
+
+# It will:
+
+# Store the active user’s ID in the session, and let you log them in and out easily.
+# Let you restrict views to logged-in (or logged-out) users.
+# Handle the normally-tricky “remember me” functionality.
+# Help protect your users’ sessions from being stolen by cookie thieves.
+# Possibly integrate with Flask-Principal or other authorization extensions later on.
+# However, it does not:
+
+# Impose a particular database or other storage method on you. You are entirely in charge of how the user is loaded.
+# Restrict you to using usernames and passwords, OpenIDs, or any other method of authenticating.
+# Handle permissions beyond “logged in or not.”
+# Handle user registration or account recovery.
 
 from utilities.forms import RegisterForm, LoginForm, EncryptForm, NoteForm, ShareForm
 from utilities.keys import generateSecretKey
@@ -92,7 +111,12 @@ def login():
 						if checkIfHashedPasswordIsCorrect(user.password, form.password.data):
 								login_user(user, remember=True)
 								return redirect(url_for('index'))
+
 				flash(f"Login attempts: {session['attempt']}")
+				return render_template('login.html', form=form), 403
+				# A 403 status code indicates that the client cannot access the requested resource. 
+				# That might mean that the wrong username and password were sent in the request, 
+				# or that the permissions on the server do not allow what was being asked.
 
 		return render_template('login.html', form=form)
 
