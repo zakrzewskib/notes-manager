@@ -127,11 +127,11 @@ from utilities.encryption import encryptMessage, decryptMessage
 def encrypt(id):
 		note = current_user.notes.filter_by(id=id).first()
 		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>'
+		 		return '<h1>This note does not belong to you!</h1>', 401 # 401 Unauthorized
 		if note.isEncrypted == 1:
-			return '<h1>This note is already encrypted </h1>'
+			return '<h1>This note is already encrypted </h1>', 405 # 405 Method Not Allowed The request method is known by the server but is not supported by the target resource.
 		if note.isPublic == 1:
-			return '<h1>This note is public, You cannot encrypt it </h1>'
+			return '<h1>This note is public, You cannot encrypt it </h1>', 405
 
 		form = EncryptForm()
 
@@ -151,9 +151,9 @@ def decrypt(id):
 		form = EncryptForm()
 		note = current_user.notes.filter_by(id=id).first()
 		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>'
+		 		return '<h1>This note does not belong to you!</h1>', 401
 		if note.isEncrypted == 0:
-			return '<h1>This note is not encrypted!</h1>'
+			return '<h1>This note is not encrypted!</h1>', 405
 
 		if form.validate_on_submit():
 				if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
@@ -184,9 +184,9 @@ def create():
 def makePublic(id):
 		note = current_user.notes.filter_by(id=id).first()
 		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>'
+		 		return '<h1>This note does not belong to you!</h1>', 401
 		if note.isEncrypted == 1:
-			return '<h1>This note is encrypted, You cannot share it </h1>'
+			return '<h1>This note is encrypted, You cannot share it </h1>', 405
 
 		note.isPublic = True
 		db.session.commit()
@@ -198,9 +198,9 @@ def makePublic(id):
 def share(id):
 		note = current_user.notes.filter_by(id=id).first()
 		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>'
+		 		return '<h1>This note does not belong to you!</h1>', 401
 		if note.isEncrypted == 1:
-			return '<h1>This note is encrypted, You cannot share it </h1>'
+			return '<h1>This note is encrypted, You cannot share it </h1>', 405
 
 		form = ShareForm()
 		if form.validate_on_submit():
