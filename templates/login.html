@@ -1,5 +1,5 @@
 {% extends "bootstrap/base.html" %} {% import "bootstrap/wtf.html" as wtf %} {% block title %} Login {% endblock %} {% block styles %} {{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='sign-form.css')}}"> {% endblock %} {% block content %}
+<link rel="stylesheet" href="{{url_for('.static', filename='sign-form.css')}}" /> {% endblock %} {% block content %}
 <div class="container">
     <form class="form" method="POST" action="/login">
         <h2 class="form-heading">Sign in</h2>
@@ -9,12 +9,11 @@
     </form>
 
     {% with messages = get_flashed_messages() %} {% if messages %}
-    <ul class=flashes>
-        {% for message in messages %}
+    <ul class="flashes">
+        {% for message in messages %} {% if message != 'Please log in to access this page'%}
         <li>{{ message }}</li>
-        {% endfor %}
+        {% endif %} {% endfor %}
     </ul>
     {% endif %} {% endwith %}
-
 </div>
 {% endblock %}

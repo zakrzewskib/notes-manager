@@ -1,5 +1,5 @@
 {% extends "bootstrap/base.html" %} {% block title %} Notes manager {% endblock %} {% block styles %} {{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}"> {% endblock %} {% block navbar %}
+<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}" /> {% endblock %} {% block navbar %}
 <nav class="topnav">
     <ul>
         <li><a href="{{ url_for('index') }}">Notes</a></li>
@@ -17,10 +17,10 @@
     </header>
 
     {% with messages = get_flashed_messages() %} {% if messages %}
-    <ul class=flashes>
-        {% for message in messages %}
+    <ul class="flashes">
+        {% for message in messages %} {% if message != 'Please log in to access this page'%}
         <li>{{ message }}</li>
-        {% endfor %}
+        {% endif %} {% endfor %}
     </ul>
     {% endif %} {% endwith %}
 
@@ -36,9 +36,7 @@
         {% for note in notes %}
         <tr>
             <td>{{note.id}}</td>
-            <td>
-                {{note.content}}
-            </td>
+            <td>{{note.content}}</td>
             <td>
                 {% if note.isEncrypted == 1 %}
                 <a href="/decrypt/{{note.id}}">Decrypt</a> {% else %}
@@ -60,9 +58,7 @@
         {% for note in publicNotes %}
         <tr>
             <td>{{note.id}}</td>
-            <td>
-                {{note.content}}
-            </td>
+            <td>{{note.content}}</td>
         </tr>
         {% endfor %}
     </table>
@@ -77,9 +73,7 @@
         {% for note in sharedNotes %}
         <tr>
             <td>{{note.id}}</td>
-            <td>
-                {{note.content}}
-            </td>
+            <td>{{note.content}}</td>
         </tr>
         {% endfor %}
     </table>
