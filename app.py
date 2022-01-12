@@ -27,6 +27,7 @@ from utilities.forms import RegisterForm, LoginForm, EncryptForm, NoteForm, Shar
 from utilities.keys import generateSecretKey
 from utilities.hashing import checkIfHashedPasswordIsCorrect, hashPassword
 from utilities.entropy import calculateEntropy, printHowStrongIsYourPassword
+from utilities.checkingInputformat import checkUsername, checkEmail
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -78,10 +79,16 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
 		form = RegisterForm()
-
+	
 		if form.validate_on_submit():
+				if not checkUsername(form.username.data):
+						return '<h1>Wrong username format!</h1>'
+
+				if not checkEmail(form.email.data):
+						return '<h1>Wrong email format!</h1>'
+
 				if User.query.filter_by(username=form.username.data).first() != None and form.username.data == User.query.filter_by(username=form.username.data).first().username:
-					return redirect(url_for('signup'))
+					return '<h1>User with that username already exist!</h1>'
 
 				hashed_password = hashPassword(form.password.data)
 				new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
@@ -97,6 +104,7 @@ import time
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 		form = LoginForm()
+
 		if not 'attempt' in session:
 			session['attempt'] = 0
 		
@@ -106,6 +114,10 @@ def login():
 		if form.validate_on_submit():
 				session['attempt'] = session['attempt'] + 1
 				# time.sleep(3)
+
+				if not checkUsername(form.username.data):
+					return '<h1>Wrong username format!</h1>'
+
 				user = User.query.filter_by(username=form.username.data).first()
 				if user:
 						if checkIfHashedPasswordIsCorrect(user.password, form.password.data):
@@ -204,7 +216,7 @@ def share(id):
 
 		form = ShareForm()
 		if form.validate_on_submit():
-      # można by tu sprawdzić np. czy te username jest faktycznie napisem
+			# można by tu sprawdzić np. czy te username jest faktycznie napisem
 			user = User.query.filter_by(username=form.username.data).first() # sprawdzić sql injection
 			if user != None:
 				note.sharedToUser = form.username.data
@@ -216,4 +228,5 @@ def share(id):
 		return render_template('share.html', form=form, note=note)
 
 if __name__ == "__main__":
-		app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
+		# app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
+		app.run(debug=True)
