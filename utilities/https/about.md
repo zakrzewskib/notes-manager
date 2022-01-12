@@ -14,3 +14,5 @@ openssl req -new -x509 -days 365 -key ca.key -out ca.crt
 sh sign.sh request.csr
 
 rename request.crt to certificate-signed.crt
+
+PEM pass phrase is password
