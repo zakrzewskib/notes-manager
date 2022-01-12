@@ -209,6 +209,7 @@ def makePublic(id):
 
 		return redirect(url_for('index'))
 
+from utilities.rsa.encryption import encryptWithSomeonesPublicKey, decryptWithPrivateKey
 @app.route('/share/<id>', methods=['GET', 'POST'])
 @login_required
 def share(id):
@@ -224,6 +225,9 @@ def share(id):
 				return '<h1>Wrong username format!</h1>'
 			user = User.query.filter_by(username=form.username.data).first()
 			if user != None:
+				f = open('key.pub', 'rb')
+				public = f.read()
+				note.content = encryptWithSomeonesPublicKey(public, note.content)
 				note.sharedToUser = form.username.data
 				db.session.commit()
 				return redirect(url_for('index'))
