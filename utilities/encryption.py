@@ -15,4 +15,27 @@ def decryptMessage(encryptedMessage, password):
   decrypted = cipher.decrypt(encryptedMessage)
   return decrypted.decode()
 
-print(decryptMessage(encryptMessage('secret message', 'password'), 'password'))
+# print(decryptMessage(encryptMessage('secret message', 'password'), 'password'))
+
+# from Crypto.Cipher import AES
+
+# def encryptMessage(data, password):
+#   key = password.encode()
+#   cipher = AES.new(key, AES.MODE_EAX)
+#   nonce = cipher.nonce
+#   ciphertext, tag = cipher.encrypt_and_digest(data.encode())
+#   return [ciphertext, tag, nonce]
+
+# def decryptMessage(ciphertext, tag, nonce, password):
+#   key = password.encode()
+#   cipher = AES.new(key, AES.MODE_EAX, nonce=nonce)
+#   plaintext = cipher.decrypt(ciphertext)
+#   try:
+#      cipher.verify(tag)
+#      print("The message is authentic:", plaintext)
+#   except ValueError:
+#      print("Key incorrect or message corrupted")
+#   return plaintext
+
+# [ciphertext, tag, nonce] = encryptMessage('secret message', 'passwordpassword')
+# print(decryptMessage(ciphertext, tag, nonce,'passwordpassword'))

@@ -134,6 +134,8 @@ def login():
 
 from utilities.encryption import encryptMessage, decryptMessage
 
+tag = None
+nonce = None
 @app.route('/encrypt/<id>', methods=['GET', 'POST'])
 @login_required
 def encrypt(id):
@@ -149,6 +151,7 @@ def encrypt(id):
 
 		if form.validate_on_submit():
 			note.isEncrypted = 1
+			#  [note.content, tag, nonce] = encryptMessage(note.content, form.password.data)
 			note.content = encryptMessage(note.content, form.password.data)
 			note.password = hashPassword(form.password.data)
 			db.session.commit()
@@ -170,6 +173,7 @@ def decrypt(id):
 		if form.validate_on_submit():
 				if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
 					note.isEncrypted = 0
+					# note.content = decryptMessage(note.content, tag, nonce, form.password.data)
 					note.content = decryptMessage(note.content, form.password.data)
 					note.password = ''
 					db.session.commit()
@@ -216,15 +220,15 @@ def share(id):
 
 		form = ShareForm()
 		if form.validate_on_submit():
-			# można by tu sprawdzić np. czy te username jest faktycznie napisem
-			user = User.query.filter_by(username=form.username.data).first() # sprawdzić sql injection
+			if not checkUsername(form.username.data):
+				return '<h1>Wrong username format!</h1>'
+			user = User.query.filter_by(username=form.username.data).first()
 			if user != None:
 				note.sharedToUser = form.username.data
 				db.session.commit()
 				return redirect(url_for('index'))
 			return '<h1>User with that name does not exist!</h1>'
 					
-
 		return render_template('share.html', form=form, note=note)
 
 if __name__ == "__main__":

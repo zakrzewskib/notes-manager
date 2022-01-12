@@ -19,6 +19,7 @@ class LoginForm(FlaskForm):
 
 class EncryptForm(FlaskForm):
 	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+	# password = PasswordField('password', validators=[InputRequired(), Length(min=16, max=16)])
 
 class NoteForm(FlaskForm):
 	content = StringField("content", validators=[InputRequired()], widget=TextArea())
