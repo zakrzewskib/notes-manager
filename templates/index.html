@@ -37,6 +37,8 @@
         <tr>
             <td>{{note.id}}</td>
             <td>{{note.content}}</td>
+            <!-- This filter 'safe' would allow sql injection, for example alerts -->
+            <!-- <td>{{note.content | safe}}</td> -->
             <td>
                 {% if note.isEncrypted == 1 %}
                 <a href="/decrypt/{{note.id}}">Decrypt</a> {% else %}
