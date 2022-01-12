@@ -204,7 +204,8 @@ def share(id):
 
 		form = ShareForm()
 		if form.validate_on_submit():
-			user = User.query.filter_by(username=form.username.data).first()
+      # można by tu sprawdzić np. czy te username jest faktycznie napisem
+			user = User.query.filter_by(username=form.username.data).first() # sprawdzić sql injection
 			if user != None:
 				note.sharedToUser = form.username.data
 				db.session.commit()
@@ -215,4 +216,4 @@ def share(id):
 		return render_template('share.html', form=form, note=note)
 
 if __name__ == "__main__":
-		app.run(debug=True)
+		app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
