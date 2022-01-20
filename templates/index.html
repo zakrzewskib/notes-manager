@@ -1,13 +1,14 @@
-{% include "layout.html" %} {% extends "bootstrap/base.html" %} {% block title %} Notes manager {% endblock %} {% block styles %} {{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}" /> {% endblock %} {% block navbar %}
-<nav class="topnav">
-    <ul>
-        <li><a href="{{ url_for('index') }}">Notes</a></li>
-        <li><a href="{{ url_for('signup') }}">Sign up</a></li>
-        <li><a href="{{ url_for('login') }}">Login</a></li>
-    </ul>
-</nav>
-{% endblock %} {% block content %}
+{% include "layout.html" %} 
+{% extends "bootstrap/base.html" %} 
+
+{% block title %} 
+Notes manager
+{% endblock %} {% block styles %} 
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}" /> 
+{% endblock %} 
+
+{% block content %}
 <div class="app">
     <header class="header">
         <h1>Notes manager</h1>
@@ -16,15 +17,19 @@
         </div>
     </header>
 
-    {% with messages = get_flashed_messages() %} {% if messages %}
-    <ul class="flashes">
-        {% for message in messages %} {% if message != 'Please log in to access this page'%}
-        <li>{{ message }}</li>
-        {% endif %} {% endfor %}
-    </ul>
-    {% endif %} {% endwith %}
+    {% with messages = get_flashed_messages() %} 
+      {% if messages %}
+        <ul class="flashes">
+            {% for message in messages %} 
+              {% if message != 'Please log in to access this page'%}
+              <li>{{ message }}</li>
+              {% endif %} 
+            {% endfor %}
+        </ul>
+      {% endif %} 
+    {% endwith %}
 
-    <a href="{{ url_for('create') }}">CreateNote</a>
+    <a href="{{ url_for('create') }}">Create Note</a>
 
     <table>
         <tr>

@@ -7,7 +7,7 @@
 
 {% block navbar %}
 <nav class="navbar fixed-top custom-container">
-    <a class="navbar-brand-custom" href="#">Notes manager</a>
+    <a class="navbar-brand-custom" href="{{ url_for('index') }}">Notes manager</a>
     <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Sign in</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('signup') }}">Sign up</a></li>
