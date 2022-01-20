@@ -109,7 +109,7 @@ def login():
 			session['attempt'] = 0
 		
 		if session['attempt'] >= 3:
-			return '<h1>Too many login attempts!</h1>'
+			return '<h1>Too many login attempts!</h1>' # How to reset it?
 
 		if form.validate_on_submit():
 				session['attempt'] = session['attempt'] + 1

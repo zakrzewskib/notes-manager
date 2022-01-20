@@ -98,7 +98,7 @@ th {
     flex-direction: column;
     align-items: center;
     font-size: 1.4rem;
-    background: rgb(255, 187, 61);
-    padding: 1rem;
+    /* background: rgb(255, 187, 61); */
+    /* padding: 1rem; */
     font-weight: bold;
 }

@@ -24,7 +24,7 @@ def printHowStrongIsYourPassword(entropy):
   s = "Your password entropy= " + str(entropy) + " (max = 8), (min = 0)"
   if entropy <= 1:
     s += ". This is very weak password!"
-  if entropy <= 3:
+  elif entropy <= 3:
     s += ". This is weak password!"
   elif entropy <= 4:
     s += ". This password is not so bad!"
