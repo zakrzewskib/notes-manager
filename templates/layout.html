@@ -1,0 +1,10 @@
+{% extends "bootstrap/base.html" %} {% block styles %} {{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}" /> {% endblock %} {% block navbar %}
+<nav class="navbar fixed-top custom-container">
+    <a class="navbar-brand-custom" href="#">Notes menager</a>
+    <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="#">Sign in</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Sign up</a></li>
+    </ul>
+</nav>
+{% endblock %} {% block content %} {% endblock %}

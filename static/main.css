@@ -8,6 +8,64 @@ body {
     font-family: Roboto;
 }
 
+.custom-container {
+    max-width: 120rem;
+    padding: 0 3.2rem;
+    margin: 0 auto;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.navbar-brand-custom {
+    margin-right: auto;
+    font-size: 2.4rem;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    gap: 1.2rem;
+    font-size: 1.6rem;
+    justify-self: center;
+}
+
+.btn-secondary-custom {
+    border: 1px solid #337ab7;
+}
+
+.form-container {
+    max-width: 60rem;
+}
+
+.form .form-control {
+    height: auto;
+    padding: 1rem;
+    font-size: 1.6rem;
+}
+
+.control-label {
+    font-size: 1.6rem;
+}
+
+.form-heading {
+    text-align: center;
+}
+
+
+/* * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Roboto;
+}
+
 .app {
     max-width: 120rem;
     padding: 0 3.2rem;
@@ -55,4 +113,4 @@ body {
     justify-content: center;
     padding: 2.4rem;
     font-size: 1.6rem;
-}
+} */
