@@ -85,7 +85,7 @@ def signup():
 				if not checkUsername(form.username.data):
 						return '<h1>Wrong username format!</h1>'
 
-        # what if email already exist?
+				# what if email already exist?
 				if not checkEmail(form.email.data):
 						return '<h1>Wrong email format!</h1>'
 
@@ -102,6 +102,11 @@ def signup():
 
 		return render_template('signup.html', form=form)
 
+from threading import Timer
+
+def resetLoginAttempts():
+	session['attempt'] = 0
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 		form = LoginForm()
@@ -110,10 +115,9 @@ def login():
 			session['attempt'] = 0
 		
 		if session['attempt'] >= 3:
-			return '<h1>Too many login attempts!</h1>' # How to reset it?
+			return '<h1>Too many login attempts!</h1>' # How to reset it? - You can clear cookies...
 
 		if form.validate_on_submit():
-				session['attempt'] = session['attempt'] + 1
 				delayLogin()
 
 				if not checkUsername(form.username.data):
@@ -125,7 +129,8 @@ def login():
 								login_user(user, remember=True)
 								return redirect(url_for('index'))
 
-				flash(f"Login attempts: {session['attempt']}")
+				session['attempt'] = session['attempt'] + 1
+				flash(f"Login attempts: {session['attempt']}")		
 				return render_template('login.html', form=form), 403
 				# A 403 status code indicates that the client cannot access the requested resource. 
 				# That might mean that the wrong username and password were sent in the request, 
