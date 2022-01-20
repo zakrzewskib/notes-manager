@@ -1,37 +1,22 @@
-{% include "layout.html" %} 
-{% extends "bootstrap/base.html" %} 
-
-{% block title %} 
-Notes manager
-{% endblock %} {% block styles %} 
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}" /> 
-{% endblock %} 
-
-{% block content %}
-<div class="app">
-    <header class="header">
-        <h1>Notes manager</h1>
-        <div class="welcome-and-logout">
-            <span>Welcome, {{ name }}!</span> <a href="{{ url_for('logout') }}">Log Out</a>
-        </div>
+{% include "layout.html" %} {% extends "bootstrap/base.html" %} {% block title %} Notes manager {% endblock %} {% block styles %} {{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}" /> {% endblock %} {% block content %}
+<div class="app custom-container">
+    <header class="custom-header">
+        <span class="welcome">Welcome, {{ name }}!</span>
+        <span class="logout"><a href="{{ url_for('logout') }}">Log Out</a></span>
     </header>
 
-    {% with messages = get_flashed_messages() %} 
-      {% if messages %}
-        <ul class="flashes">
-            {% for message in messages %} 
-              {% if message != 'Please log in to access this page'%}
-              <li>{{ message }}</li>
-              {% endif %} 
-            {% endfor %}
-        </ul>
-      {% endif %} 
-    {% endwith %}
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <ul class="flashes">
+        {% for message in messages %} {% if message != 'Please log in to access this page'%}
+        <li>{{ message }}</li>
+        {% endif %} {% endfor %}
+    </ul>
+    {% endif %} {% endwith %}
 
-    <a href="{{ url_for('create') }}">Create Note</a>
+    <a class="btn btn-primary create-button" href="{{ url_for('create') }}">Create Note</a>
 
-    <table>
+    <table class="table table-striped table-bordered">
         <tr>
             <th>Id</th>
             <th>Content</th>
@@ -56,7 +41,7 @@ Notes manager
     </table>
 
     <h2>Public notes:</h2>
-    <table>
+    <table class="table table-striped table-bordered">
         <tr>
             <th>Id</th>
             <th>Content</th>
@@ -65,13 +50,13 @@ Notes manager
         {% for note in publicNotes %}
         <tr>
             <td>{{note.id}}</td>
-            <td>{{note.content}}</td>
+            <td class="overflow">{{note.content}}</td>
         </tr>
         {% endfor %}
     </table>
 
     <h2>Shared notes:</h2>
-    <table>
+    <table class="table table-striped table-bordered">
         <tr>
             <th>Id</th>
             <th>Content</th>
@@ -79,7 +64,7 @@ Notes manager
 
         {% for note in sharedNotes %}
         <tr>
-            <td>{{note.id}}</td>
+            <td scope="row">{{note.id}}</td>
             <td>{{note.content}}</td>
         </tr>
         {% endfor %}
