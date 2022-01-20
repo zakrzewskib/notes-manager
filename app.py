@@ -28,6 +28,7 @@ from utilities.keys import generateSecretKey
 from utilities.hashing import checkIfHashedPasswordIsCorrect, hashPassword
 from utilities.entropy import calculateEntropy, printHowStrongIsYourPassword
 from utilities.checkingInputformat import checkUsername, checkEmail
+from utilities.loginDelay import delayLogin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -100,7 +101,6 @@ def signup():
 
 		return render_template('signup.html', form=form)
 
-import time
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 		form = LoginForm()
@@ -113,7 +113,7 @@ def login():
 
 		if form.validate_on_submit():
 				session['attempt'] = session['attempt'] + 1
-				# time.sleep(3)
+				delayLogin()
 
 				if not checkUsername(form.username.data):
 					return '<h1>Wrong username format!</h1>'
@@ -209,7 +209,6 @@ def makePublic(id):
 
 		return redirect(url_for('index'))
 
-from utilities.rsa.encryption import encryptWithSomeonesPublicKey, decryptWithPrivateKey
 @app.route('/share/<id>', methods=['GET', 'POST'])
 @login_required
 def share(id):
@@ -227,7 +226,6 @@ def share(id):
 			if user != None:
 				f = open('key.pub', 'rb')
 				public = f.read()
-				note.content = encryptWithSomeonesPublicKey(public, note.content)
 				note.sharedToUser = form.username.data
 				db.session.commit()
 				return redirect(url_for('index'))
@@ -236,5 +234,5 @@ def share(id):
 		return render_template('share.html', form=form, note=note)
 
 if __name__ == "__main__":
-		# app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
-		app.run(debug=True)
+		app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
+		# app.run(debug=True)
