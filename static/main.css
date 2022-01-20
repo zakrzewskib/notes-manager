@@ -91,3 +91,14 @@ th {
     /* border: 1px solid #337ab7 !important; */
     padding: 1.2rem !important;
 }
+
+.flash-messages {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.4rem;
+    background: rgb(255, 187, 61);
+    padding: 1rem;
+    font-weight: bold;
+}
