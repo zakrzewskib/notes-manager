@@ -1,6 +1,18 @@
-{% extends "bootstrap/base.html" %} {% import "bootstrap/wtf.html" as wtf %} {% block title %} Login {% endblock %} {% block styles %} {{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='sign-form.css')}}"> {% endblock %} {% block content %}
-<div class="container">
+{% include "layout.html" %}
+{% extends "bootstrap/base.html" %} 
+{% import "bootstrap/wtf.html" as wtf %} 
+
+{% block title %} Create {% endblock %} 
+
+{% block styles %} 
+
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='main.css')}}"> 
+
+{% endblock %} 
+
+{% block content %}
+<div class="custom-container form-container">
     <form class="form" method="POST" action="/create">
         {{ form.hidden_tag() }} {{ wtf.form_field(form.content) }}
         <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
