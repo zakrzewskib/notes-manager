@@ -67,7 +67,7 @@ def load_user(user_id):
 def logout():
 		session['attempt'] = 0
 		logout_user()
-		return redirect(url_for('index'))
+		return redirect(url_for('login'))
 
 @app.route('/')
 @login_required
@@ -85,6 +85,7 @@ def signup():
 				if not checkUsername(form.username.data):
 						return '<h1>Wrong username format!</h1>'
 
+        # what if email already exist?
 				if not checkEmail(form.email.data):
 						return '<h1>Wrong email format!</h1>'
 
@@ -224,8 +225,6 @@ def share(id):
 				return '<h1>Wrong username format!</h1>'
 			user = User.query.filter_by(username=form.username.data).first()
 			if user != None:
-				f = open('key.pub', 'rb')
-				public = f.read()
 				note.sharedToUser = form.username.data
 				db.session.commit()
 				return redirect(url_for('index'))
@@ -236,3 +235,7 @@ def share(id):
 if __name__ == "__main__":
 		app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
 		# app.run(debug=True)
+
+# Users:
+# user1 password123
+# user2 correcthorsebatterystaple
