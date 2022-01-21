@@ -92,6 +92,9 @@ def signup():
 				if User.query.filter_by(username=form.username.data).first() != None and form.username.data == User.query.filter_by(username=form.username.data).first().username:
 					return '<h1>User with that username already exist!</h1>'
 
+				if User.query.filter_by(email=form.email.data).first() != None and form.email.data == User.query.filter_by(email=form.email.data).first().email:
+					return '<h1>User with that email already exist!</h1>'
+
 				hashed_password = hashPassword(form.password.data)
 				new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
 
