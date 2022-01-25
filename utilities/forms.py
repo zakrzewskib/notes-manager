@@ -18,11 +18,10 @@ class LoginForm(FlaskForm):
 	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
 class EncryptForm(FlaskForm):
-	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
-	# password = PasswordField('password', validators=[InputRequired(), Length(min=16, max=16)])
+	password = PasswordField('password', validators=[InputRequired(), Length(min=16, max=16)])
 
 class NoteForm(FlaskForm):
-	content = StringField("content", validators=[InputRequired()], widget=TextArea())
+	content = StringField("content", validators=[InputRequired(), Length(min=1)], widget=TextArea())
 
 class ShareForm(FlaskForm):
 	username = StringField("username", validators=[InputRequired()])

@@ -1,3 +1,5 @@
+from utilities.encryption import encryptMessage, decryptMessage
+from threading import Timer
 from flask import Flask, render_template, redirect, url_for, flash, session
 
 from flask_bootstrap import Bootstrap
@@ -5,8 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 # https://flask-login.readthedocs.io/en/latest/#login-using-authorization-header
-# Flask-Login provides user session management for Flask. 
-# 
+# Flask-Login provides user session management for Flask.
+#
 # It handles the common tasks of logging in, logging out, and remembering your users’ sessions over extended periods of time.
 
 # It will:
@@ -46,207 +48,221 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 class User(UserMixin, db.Model):
-		id = db.Column(db.Integer, primary_key=True)
-		username = db.Column(db.String(15), unique=True)
-		email = db.Column(db.String(50), unique=True)
-		password = db.Column(db.String(80))
-		notes = db.relationship('Note', backref='user', lazy='dynamic')
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15), unique=True)
+    email = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(80))
+    notes = db.relationship('Note', backref='user', lazy='dynamic')
+
 
 class Note(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	content = db.Column(db.String())
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	password = db.Column(db.String())
-	isEncrypted = db.Column(db.Boolean())
-	isPublic = db.Column(db.Boolean())
-	sharedToUser = db.Column(db.String())
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    password = db.Column(db.String())
+    isEncrypted = db.Column(db.Boolean())
+    isPublic = db.Column(db.Boolean())
+    sharedToUser = db.Column(db.String())
+
 
 @login_manager.user_loader
 def load_user(user_id):
-		return User.query.get(int(user_id))
+    return User.query.get(int(user_id))
+
 
 @app.route('/logout')
 @login_required
 def logout():
-		session['attempt'] = 0
-		logout_user()
-		return redirect(url_for('login'))
+    session['attempt'] = 0
+    logout_user()
+    return redirect(url_for('login'))
+
 
 @app.route('/')
 @login_required
 def index():
-		notes = current_user.notes
-		publicNotes = Note.query.filter_by(isPublic=True) # and user_id!=current_user.get_id()
-		sharedNotes = Note.query.filter_by(sharedToUser=current_user.username)
-		return render_template('index.html', notes=notes, name=current_user.username, publicNotes=publicNotes, sharedNotes=sharedNotes)
+    notes = current_user.notes
+    # and user_id!=current_user.get_id()
+    publicNotes = Note.query.filter_by(isPublic=True)
+    sharedNotes = Note.query.filter_by(sharedToUser=current_user.username)
+    return render_template('index.html', notes=notes, name=current_user.username, publicNotes=publicNotes, sharedNotes=sharedNotes)
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-		form = RegisterForm()
-	
-		if form.validate_on_submit():
-				if not checkUsername(form.username.data):
-						return '<h1>Wrong username format!</h1>'
+    form = RegisterForm()
 
-				# what if email already exist?
-				if not checkEmail(form.email.data):
-						return '<h1>Wrong email format!</h1>'
+    if form.validate_on_submit():
+        if not checkUsername(form.username.data):
+            return '<h1>Wrong username format!</h1>'
 
-				if User.query.filter_by(username=form.username.data).first() != None and form.username.data == User.query.filter_by(username=form.username.data).first().username:
-					return '<h1>User with that username already exist!</h1>'
+        # what if email already exist?
+        if not checkEmail(form.email.data):
+            return '<h1>Wrong email format!</h1>'
 
-				if User.query.filter_by(email=form.email.data).first() != None and form.email.data == User.query.filter_by(email=form.email.data).first().email:
-					return '<h1>User with that email already exist!</h1>'
+        if User.query.filter_by(username=form.username.data).first() != None and form.username.data == User.query.filter_by(username=form.username.data).first().username:
+            return '<h1>User with that username already exist!</h1>'
 
-				hashed_password = hashPassword(form.password.data)
-				new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        if User.query.filter_by(email=form.email.data).first() != None and form.email.data == User.query.filter_by(email=form.email.data).first().email:
+            return '<h1>User with that email already exist!</h1>'
 
-				db.session.add(new_user)
-				db.session.commit()
-				flash(printHowStrongIsYourPassword(calculateEntropy(form.password.data)))
-				return redirect(url_for('login'))
+        hashed_password = hashPassword(form.password.data)
+        new_user = User(username=form.username.data,
+                        email=form.email.data, password=hashed_password)
 
-		return render_template('signup.html', form=form)
+        db.session.add(new_user)
+        db.session.commit()
+        flash(printHowStrongIsYourPassword(
+            calculateEntropy(form.password.data)))
+        return redirect(url_for('login'))
 
-from threading import Timer
+    return render_template('signup.html', form=form)
+
 
 def resetLoginAttempts():
-	session['attempt'] = 0
+    session['attempt'] = 0
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-		form = LoginForm()
+    form = LoginForm()
 
-		if not 'attempt' in session:
-			session['attempt'] = 0
-		
-		if session['attempt'] >= 3:
-			return '<h1>Too many login attempts!</h1>' # How to reset it? - You can clear cookies...
+    if not 'attempt' in session:
+        session['attempt'] = 0
 
-		if form.validate_on_submit():
-				delayLogin()
+    if session['attempt'] >= 3:
+        # How to reset it? - You can clear cookies...
+        return '<h1>Too many login attempts!</h1>'
 
-				if not checkUsername(form.username.data):
-					return '<h1>Wrong username format!</h1>'
+    if form.validate_on_submit():
+        delayLogin()
 
-				user = User.query.filter_by(username=form.username.data).first()
-				if user:
-						if checkIfHashedPasswordIsCorrect(user.password, form.password.data):
-								login_user(user, remember=True)
-								return redirect(url_for('index'))
+        if not checkUsername(form.username.data):
+            return '<h1>Wrong username format!</h1>'
 
-				session['attempt'] = session['attempt'] + 1
-				flash(f"Login attempts: {session['attempt']}")		
-				return render_template('login.html', form=form), 403
-				# A 403 status code indicates that the client cannot access the requested resource. 
-				# That might mean that the wrong username and password were sent in the request, 
-				# or that the permissions on the server do not allow what was being asked.
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            if checkIfHashedPasswordIsCorrect(user.password, form.password.data):
+                login_user(user, remember=True)
+                return redirect(url_for('index'))
 
-		return render_template('login.html', form=form)
+        session['attempt'] = session['attempt'] + 1
+        flash(f"Login attempts: {session['attempt']}")
+        return render_template('login.html', form=form), 403
+        # A 403 status code indicates that the client cannot access the requested resource.
+        # That might mean that the wrong username and password were sent in the request,
+        # or that the permissions on the server do not allow what was being asked.
 
-from utilities.encryption import encryptMessage, decryptMessage
+    return render_template('login.html', form=form)
 
-tag = None
-nonce = None
+
 @app.route('/encrypt/<id>', methods=['GET', 'POST'])
 @login_required
 def encrypt(id):
-		note = current_user.notes.filter_by(id=id).first()
-		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>', 401 # 401 Unauthorized
-		if note.isEncrypted == 1:
-			return '<h1>This note is already encrypted </h1>', 405 # 405 Method Not Allowed The request method is known by the server but is not supported by the target resource.
-		if note.isPublic == 1:
-			return '<h1>This note is public, You cannot encrypt it </h1>', 405
+    note = current_user.notes.filter_by(id=id).first()
+    if note == None:
+        return '<h1>This note does not belong to you!</h1>', 401  # 401 Unauthorized
+    if note.isEncrypted == 1:
+        # 405 Method Not Allowed The request method is known by the server but is not supported by the target resource.
+        return '<h1>This note is already encrypted </h1>', 405
+    if note.isPublic == 1:
+        return '<h1>This note is public, You cannot encrypt it </h1>', 405
 
-		form = EncryptForm()
+    form = EncryptForm()
 
-		if form.validate_on_submit():
-			note.isEncrypted = 1
-			#  [note.content, tag, nonce] = encryptMessage(note.content, form.password.data)
-			note.content = encryptMessage(note.content, form.password.data)
-			note.password = hashPassword(form.password.data)
-			db.session.commit()
-			flash(printHowStrongIsYourPassword(calculateEntropy(form.password.data)))
-			return redirect(url_for('index'))
+    if form.validate_on_submit():
+        note.isEncrypted = 1
+        note.content = encryptMessage(note.content, form.password.data)
+        note.password = hashPassword(form.password.data)
+        db.session.commit()
+        flash(printHowStrongIsYourPassword(
+            calculateEntropy(form.password.data)))
+        return redirect(url_for('index'))
 
-		return render_template('encrypt.html', form=form, note=note)
+    return render_template('encrypt.html', form=form, note=note)
+
 
 @app.route('/decrypt/<id>', methods=['GET', 'POST'])
 @login_required
 def decrypt(id):
-		form = EncryptForm()
-		note = current_user.notes.filter_by(id=id).first()
-		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>', 401
-		if note.isEncrypted == 0:
-			return '<h1>This note is not encrypted!</h1>', 405
+    form = EncryptForm()
+    note = current_user.notes.filter_by(id=id).first()
+    if note == None:
+        return '<h1>This note does not belong to you!</h1>', 401
+    if note.isEncrypted == 0:
+        return '<h1>This note is not encrypted!</h1>', 405
 
-		if form.validate_on_submit():
-				if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
-					note.isEncrypted = 0
-					# note.content = decryptMessage(note.content, tag, nonce, form.password.data)
-					note.content = decryptMessage(note.content, form.password.data)
-					note.password = ''
-					db.session.commit()
-					return redirect(url_for('index'))
-				return '<h1>Invalid password</h1>'
+    if form.validate_on_submit():
+        if checkIfHashedPasswordIsCorrect(note.password, form.password.data):
+            note.isEncrypted = 0
+            note.content = decryptMessage(note.content, form.password.data)
+            note.password = ''
+            db.session.commit()
+            return redirect(url_for('index'))
+        return '<h1>Invalid password</h1>'
 
-		return render_template('decrypt.html', form=form, note=note)
+    return render_template('decrypt.html', form=form, note=note)
+
 
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create():
-		form = NoteForm()
+    form = NoteForm()
 
-		if form.validate_on_submit():
-				note = Note(content=form.content.data, user_id=current_user.get_id(), isEncrypted=False)
-				db.session.add(note)
-				db.session.commit()
-				return redirect(url_for('index'))
+    if form.validate_on_submit():
+        note = Note(content=form.content.data,
+                    user_id=current_user.get_id(), isEncrypted=False)
+        db.session.add(note)
+        db.session.commit()
+        return redirect(url_for('index'))
 
-		return render_template('create.html', form=form)
+    return render_template('create.html', form=form)
+
 
 @app.route('/makePublic/<id>', methods=['GET'])
 @login_required
 def makePublic(id):
-		note = current_user.notes.filter_by(id=id).first()
-		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>', 401
-		if note.isEncrypted == 1:
-			return '<h1>This note is encrypted, You cannot share it </h1>', 405
+    note = current_user.notes.filter_by(id=id).first()
+    if note == None:
+        return '<h1>This note does not belong to you!</h1>', 401
+    if note.isEncrypted == 1:
+        return '<h1>This note is encrypted, You cannot share it </h1>', 405
 
-		note.isPublic = True
-		db.session.commit()
+    note.isPublic = True
+    db.session.commit()
 
-		return redirect(url_for('index'))
+    return redirect(url_for('index'))
+
 
 @app.route('/share/<id>', methods=['GET', 'POST'])
 @login_required
 def share(id):
-		note = current_user.notes.filter_by(id=id).first()
-		if note == None:
-		 		return '<h1>This note does not belong to you!</h1>', 401
-		if note.isEncrypted == 1:
-			return '<h1>This note is encrypted, You cannot share it </h1>', 405
+    note = current_user.notes.filter_by(id=id).first()
+    if note == None:
+        return '<h1>This note does not belong to you!</h1>', 401
+    if note.isEncrypted == 1:
+        return '<h1>This note is encrypted, You cannot share it </h1>', 405
 
-		form = ShareForm()
-		if form.validate_on_submit():
-			if not checkUsername(form.username.data):
-				return '<h1>Wrong username format!</h1>'
-			user = User.query.filter_by(username=form.username.data).first()
-			if user != None:
-				note.sharedToUser = form.username.data
-				db.session.commit()
-				return redirect(url_for('index'))
-			return '<h1>User with that name does not exist!</h1>'
-					
-		return render_template('share.html', form=form, note=note)
+    form = ShareForm()
+    if form.validate_on_submit():
+        if not checkUsername(form.username.data):
+            return '<h1>Wrong username format!</h1>'
+        user = User.query.filter_by(username=form.username.data).first()
+        if user != None:
+            note.sharedToUser = form.username.data
+            db.session.commit()
+            return redirect(url_for('index'))
+        return '<h1>User with that name does not exist!</h1>'
+
+    return render_template('share.html', form=form, note=note)
+
 
 if __name__ == "__main__":
-		app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
-		# app.run(debug=True)
+    app.run(debug=True, ssl_context=(
+        'utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
+    # app.run(debug=True)
 
 # Users:
 # user1 password123
