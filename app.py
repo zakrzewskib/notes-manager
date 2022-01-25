@@ -34,6 +34,10 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = generateSecretKey()
 
+
+# https://www.quora.com/Do-I-need-to-worry-about-SQL-injection-if-Im-using-SQLAlchemy-with-Pyramid
+# under the hood SQLAlchemy will auto escape any parameters and/or special characters that would be interpreted as part of valid SQL commands if it were just part of a raw string.
+
 db = SQLAlchemy(app)
 
 Bootstrap(app)
