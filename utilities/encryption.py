@@ -7,7 +7,7 @@ BLOCK_SIZE = 32
 def encryptMessage(data, password):
     key = password.encode()
     aes = AES.new(key, AES.MODE_ECB)
-    return aes.encrypt(pad(data.encode(), 32))
+    return aes.encrypt(pad(data.encode(), BLOCK_SIZE))
 
 
 def decryptMessage(ciphertext, password):
