@@ -1,13 +1,9 @@
 import jinja2
-from bs4 import BeautifulSoup
 from flaskext.markdown import Markdown
 from utilities.encryption import encryptMessage, decryptMessage
-from threading import Timer
 from flask import Flask, render_template, redirect, url_for, flash, session
-
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
-
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 # https://flask-login.readthedocs.io/en/latest/#login-using-authorization-header
 # Flask-Login provides user session management for Flask.
