@@ -11,6 +11,11 @@
 {% endblock %} 
 
 {% block content %}
+
+{{ "hello world!"|make_caps }}
+
+{{ "**hello world!**"|markdown }}
+
 <div class="custom-container form-container">
     <form class="form" method="POST" action="/login">
         <h2 class="form-heading">Sign in</h2>
