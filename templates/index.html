@@ -27,11 +27,7 @@
         <tr>
             <td>{{note.id}}</td>
             <!-- <td>{{note.content}}</td> -->
-            <!-- This filter 'safe' would allow sql injection, for example alerts -->
             <td>{{note.content | markdown}}</td>
-
-            <!-- Ability to style notes would be interesting, because we would probably have to use | safe filter 
-            to for example show bold text (<b></b>) which might cause some trouble-->
             <td>
                 {% if note.isEncrypted == 1 %}
                 <a href="/decrypt/{{note.id}}">Decrypt</a> {% else %}

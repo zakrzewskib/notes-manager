@@ -54,29 +54,6 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 
-@app.template_filter('make_caps')
-def caps(text):
-		"""Convert a string to all caps."""
-		return text.upper()
-
-
-VALID_TAGS = ['strong', 'em', 'p', 'ul', 'li', 'br']
-
-
-def sanitize_html(value):
-
-		soup = BeautifulSoup(value)
-
-		for tag in soup.findAll(True):
-				if tag.name not in VALID_TAGS:
-						tag.hidden = True
-
-		return soup.renderContents()
-
-
-jinja2.filters.FILTERS['make_caps'] = caps
-
-
 class User(UserMixin, db.Model):
 		id = db.Column(db.Integer, primary_key=True)
 		username = db.Column(db.String(15), unique=True)
@@ -235,7 +212,6 @@ def decrypt(id):
 		return render_template('decrypt.html', form=form, note=note)
 
 import bleach
-
 bleach.sanitizer.ALLOWED_TAGS = ['b', 'em', 'i', 'strong']
 
 @app.route('/create', methods=['GET', 'POST'])
@@ -244,9 +220,7 @@ def create():
 		form = NoteForm()
 
 		if form.validate_on_submit():
-			print(form.content.data)
 			content = bleach.clean(form.content.data)
-			print(content)
 
 			note = Note(content=content,
 									user_id=current_user.get_id(), isEncrypted=False)
@@ -302,4 +276,3 @@ if __name__ == "__main__":
 
 # Users:
 # user1 password123
-# user2 correcthorsebatterystaple
