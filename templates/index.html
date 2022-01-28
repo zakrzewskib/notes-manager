@@ -26,8 +26,8 @@
         {% for note in notes %}
         <tr>
             <td>{{note.id}}</td>
-            <td>{{note.content}}</td>
-            <!-- <td>{{note.content | markdown}}</td> -->
+            <!-- <td>{{note.content}}</td> -->
+            <td>{{note.content | markdown}}</td>
             <td>
                 {% if note.isEncrypted == 1 %}
                 <a href="/decrypt/{{note.id}}">Decrypt</a> {% else %}
