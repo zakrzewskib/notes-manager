@@ -266,9 +266,10 @@ def share(id):
 
 
 if __name__ == "__main__":
-		app.run(debug=True, ssl_context=(
-				'utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
+		#app.run(debug=True, ssl_context=(
+				#'utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
 		# app.run(debug=True)
+		app.run()
 
 # Users:
 # user1 password123
