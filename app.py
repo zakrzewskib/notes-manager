@@ -1,5 +1,5 @@
 import jinja2
-from flaskext.markdown import Markdown
+# from flaskext.markdown import Markdown
 from utilities.encryption import encryptMessage, decryptMessage
 from flask import Flask, render_template, redirect, url_for, flash, session
 from flask_bootstrap import Bootstrap
@@ -39,7 +39,7 @@ app.config['SECRET_KEY'] = generateSecretKey()
 # https://www.quora.com/Do-I-need-to-worry-about-SQL-injection-if-Im-using-SQLAlchemy-with-Pyramid
 # under the hood SQLAlchemy will auto escape any parameters and/or special characters that would be interpreted as part of valid SQL commands if it were just part of a raw string.
 
-Markdown(app)
+# Markdown(app)
 
 db = SQLAlchemy(app)
 
@@ -216,7 +216,8 @@ def create():
 		form = NoteForm()
 
 		if form.validate_on_submit():
-			content = bleach.clean(form.content.data)
+			# content = bleach.clean(form.content.data)
+			content = form.content.data
 
 			note = Note(content=content,
 									user_id=current_user.get_id(), isEncrypted=False)
