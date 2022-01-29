@@ -37,6 +37,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = generateSecretKey()
 
+bleach.sanitizer.ALLOWED_TAGS = ['b', 'em', 'i', 'strong']
+# bleach.sanitizer.ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul']
 
 # https://www.quora.com/Do-I-need-to-worry-about-SQL-injection-if-Im-using-SQLAlchemy-with-Pyramid
 # under the hood SQLAlchemy will auto escape any parameters and/or special characters that would be interpreted as part of valid SQL commands if it were just part of a raw string.
@@ -209,19 +211,13 @@ def decrypt(id):
     return render_template('decrypt.html', form=form, note=note)
 
 
-# bleach.sanitizer.ALLOWED_TAGS = ['b', 'em', 'i', 'strong']
-
-# bleach.sanitizer.ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul']
-
-
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create():
     form = NoteForm()
 
     if form.validate_on_submit():
-        content = form.content.data
-        bleach.clean(content)
+        content = bleach.clean(form.content.data)
 
         note = Note(content=content,
                     user_id=current_user.get_id(), isEncrypted=False)
@@ -271,10 +267,10 @@ def share(id):
 
 
 if __name__ == "__main__":
-    # app.run(debug=True, ssl_context=(
-    # 'utilities/https/certificate-signed.crt', 'utilities/https/key.key'))
+    app.run(debug=True, ssl_context=('utilities/https/certificate-signed.crt',
+            'utilities/https/key.key'))
     # app.run(debug=True)
-    app.run()
+    # app.run()
 
 # Users:
 # user1 password123
