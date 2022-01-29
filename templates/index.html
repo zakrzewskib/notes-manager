@@ -49,7 +49,7 @@
         {% for note in publicNotes %}
         <tr>
             <td>{{note.id}}</td>
-            <td class="overflow">{{note.content}}</td>
+            <td class="overflow">{{note.content | markdown}}</td>
         </tr>
         {% endfor %}
     </table>
@@ -64,7 +64,7 @@
         {% for note in sharedNotes %}
         <tr>
             <td scope="row">{{note.id}}</td>
-            <td>{{note.content}}</td>
+            <td>{{note.content | markdown}}</td>
         </tr>
         {% endfor %}
     </table>
